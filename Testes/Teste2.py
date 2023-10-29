@@ -11,18 +11,7 @@ pontos_triang = [(-0.2, -0.6), (-0.8, -0.4), (-0.8, -0.8)]  # triangulo
 pontos_pent = [(-0.2, 0.4), (-0.45, 0.6), (-0.8, 0.55), (-0.8, 0.25), (-0.45, 0.2)]  # pentagono
 pontos_triang_equilatero = [(1, 0), (-0.5, -0.866), (-0.5, 0.866)] #triangulo equilatero
 
-
-# plotarX = [-0.8,-0.4,-0.4,-0.8]
-# #adiciona o primeiro ponto x ao final para fechar o poligono
-# plotarX.append(plotarX[0])
-
-# plotarY = [0.8,0.8,0.4,0.4]
-# #adiciona o primeiro ponto y ao final para fechar o poligono
-# plotarY.append(plotarY[0])
-
-resolutions = [(100, 100), (300, 300), (600, 600), (600, 800), (1080, 1920)]
-
-
+resolutions = [(50, 50), (100, 100), (300, 300), (600, 600), (600, 800), (1080, 1920)]
 
 class Matriz:
     def __init__(self):
@@ -77,7 +66,7 @@ class Curva:
         lista = []
 
         # Número de segmentos de reta para a rasterização
-        num_segmentos = 100
+        num_segmentos = 7
 
         for i in range(num_segmentos):
             t = i / num_segmentos
@@ -109,17 +98,13 @@ class Curva:
                 rx0, ry0 = ajustar_res(*self.tangentes[i], *matriz_desenho.shape[:2])
                 rx1, ry1 = ajustar_res(*self.tangentes[i + 1], *matriz_desenho.shape[:2])
 
-                pontos_rasterizados = self.rasteriza_curva_hermite(x0, y0, x1, y1, rx0, ry0, rx1, ry1)
-
+                pontos_curva = self.rasteriza_curva_hermite(x0, y0, x1, y1, rx0, ry0, rx1, ry1)
+                pontos_rasterizados = []
+                for c in range(len(pontos_curva) - 1):
+                    pontos_rasterizados += (rasterizar(pontos_curva[c][0],pontos_curva[c][1],pontos_curva[c + 1][0],pontos_curva[c + 1][1]))   
                 for p in pontos_rasterizados:
                     if 0 <= p[0] < matriz_desenho.shape[0] and 0 <= p[1] < matriz_desenho.shape[1]:
                         matriz_desenho[p[0], p[1]] = self.color
-                    
-                
-
-
-
-
 
 class Tela:
     def __init__(self):
@@ -164,7 +149,7 @@ class Tela:
 myMatriz = Matriz()
 
 #Plota e mostra os gráficos
-def mostrar(img, px, py):
+def mostrar():
     fig, axs = plt.subplots(2, 3, figsize=(12, 8))
     axs = axs.ravel()
 
@@ -174,8 +159,8 @@ def mostrar(img, px, py):
         axs[i].invert_yaxis()
     plt.tight_layout()
 
-    plt.xlim([-1, 1])
-    plt.ylim([-1, 1])
+    # plt.xlim([-1, 1])
+    # plt.ylim([-1, 1])
 
     # plt.plot([x1,x2..,xn],[y1,y2...,yn])
     # fig.delaxes(axs[6])
@@ -282,25 +267,25 @@ tela = Tela()
 triangulo = Poligono(pontos_triang_equilatero, azul)
 quadrado = Poligono(pontos_quad, vermelho)
 hexagono = Poligono(pontos_hex, verde)
-pentagono = Poligono(pontos_pent, amarelo)
+pentagono = Poligono(pontos_pent, rosa)
 
 
-# Pontos de Controle para o Círculo (valores entre -1 e 1)
+# Pontos de Controle (valores entre -1 e 1)
 p0 = (-0.5, -0.5)
 p1 = (0.5, -0.5)
-p2 = (0.5, 0.5)
-p3 = (-0.5, 0.5)
-p4 = (-0.5, -0.5)
+# p2 = (0.5, 0.5)
+# p3 = (-0.5, 0.5)
+# p4 = (-0.5, -0.5)
 
-# Vetores Tangentes para o Círculo (valores entre -1 e 1)
+# Vetores Tangentes (valores entre -1 e 1)
 t0 = (0, -1)
 t1 = (1, 0)
-t2 = (0, 1)
-t3 = (0, -1)
-t4 = (0, -1)
+# t2 = (0, 1)
+# t3 = (0, -1)
+# t4 = (0, -1)
 
 # Cria uma instância da classe Curva
-curva = Curva([p0, p1, p2, p3, p4], [t0, t1, t2, t3, t4], amarelo)
+curva = Curva([p0, p1], [t0, t1], amarelo)
 
 
 # # pp = [(y1,x1),(y2,x2)...,(yn,xn)]
@@ -327,14 +312,15 @@ tela.add_Poligono(pentagono)
 # tela.add_Poligono(triangulo2)
 tela.add_Poligono(quadrado)
 # tela.add_Poligono(quadrado2)
-tela.add_Reta(Reta([(-1,-0.5), (1,-0.5 )], color=branco))
+tela.add_Reta(Reta([(-2,-0.5), (1,-0.5 )], color=branco))
 
 tela.add_Curva(curva)
 
 
 tela.draw_Tela(myMatriz.matriz)
-mostrar(myMatriz.matriz,0,0)
+mostrar()
 
 # # rt.myMatriz.zerarMatriz()
 # # meuPoligono = rt.Poligono([[],[]], cor)
 # # tela.add_Poligono(meuPoligono)
+
